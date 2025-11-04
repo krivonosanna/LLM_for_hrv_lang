@@ -62,7 +62,7 @@
 
 ```bash
 pip install -r requirements.txt
-python train.py
+python train.py --config config.yaml
 ```
 
 Для быстрого запуска (только проверить работоспособность)
