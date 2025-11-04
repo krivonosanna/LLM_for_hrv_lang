@@ -56,6 +56,23 @@
 ; - **Инфраструктура:** Docker, Kubernetes   -->
 - **CI/CD:** GitHub Actions 
 
+## Вызов
+
+Для запуска обучения модели используйте следующую команду:
+
+```bash
+pip install -r requirements.txt
+python train.py
+```
+
+Для быстрого запуска (только проверить работоспособность)
+
+```bash
+pip install -r requirements.txt
+python train.py --config config.yaml data.num_samples=1000 tokenizer.num_samples_for_tokenizer=1000 trainer.n_steps=5 trainer.val_every_n_steps=3 trainer.plot_every_n_steps=1
+```
+
+
 ## ✅ Контакты
 
 **Автор:** *[Кривонос Анна]* 

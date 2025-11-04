@@ -1,0 +1,44 @@
+# config.yaml
+seed: 42
+project_name: cro-llm-proto
+
+data:
+  use_load_from_txt: False
+  file_args:
+    path: None # если данные загружаются локально из файла
+  load_args:
+    path: "HuggingFaceFW/fineweb-2" # если используется load_datasets
+    name: "hrv_Latn"
+    split: "train"
+    streaming: True
+  num_samples: 70_000
+  test_size: 0.1
+
+tokenizer:
+  num_samples_for_tokenizer: 10_000
+  path_save: tokenizer
+
+model:
+  n_layer: 6
+  n_head: 6
+  n_kv_head: 3
+  hidden_dim: 384
+  intermediate_dim: 1024
+  dropout: 0.1
+  vocab_size: 4096
+  : 512
+  path_save: model
+
+
+trainer:
+  learning_rate: 3e-4
+  weight_decay: 0.01
+  clip_grad_norm: 1.0
+  n_steps: 20_000
+  val_every_n_steps: 500
+  plot_every_n_steps: 100
+  batch_size: 16
+
+logging:
+  log_dir: logs/training.log
+  level: INFO

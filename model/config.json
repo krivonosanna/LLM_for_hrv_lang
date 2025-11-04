@@ -1,0 +1,10 @@
+{
+  "dropout": 0.1,
+  "hidden_dim": 384,
+  "intermediate_dim": 1024,
+  "max_seq_len": 512,
+  "n_head": 6,
+  "n_kv_head": 3,
+  "n_layer": 6,
+  "vocab_size": 4096
+}
