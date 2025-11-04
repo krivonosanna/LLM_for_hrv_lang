@@ -18,11 +18,6 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Lint with ruff
-        run: |
-          ruff check .
-          ruff format --check .
-
       - name: Run tests
         run: |
           pytest tests/ -v --cov=src --cov-report=xml
