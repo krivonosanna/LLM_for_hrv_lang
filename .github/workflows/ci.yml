@@ -17,6 +17,17 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          pip install dvc  # DVC required to pull data
+
+      - name: Configure DVC remote (DAGsHub)
+        run: |
+          dvc remote add origin https://dagshub.com/krivonosanna/LLM_for_hrv_lang.dvc
+          dvc remote modify origin auth basic
+          dvc remote modify origin user "${{ secrets.DAGSHUB_USERNAME }}"
+          dvc remote modify origin password "${{ secrets.DAGSHUB_TOKEN }}"
+
+      - name: Pull DVC-tracked data and model
+        run: dvc pull
 
       - name: Run tests
         run: |
