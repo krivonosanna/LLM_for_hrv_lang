@@ -8,6 +8,8 @@ from src.train import Trainer
 from src.utils import set_seed, setup_logger
 from dataclasses import dataclass
 from omegaconf import OmegaConf
+import mlflow
+import os
 
 
 @dataclass
@@ -20,6 +22,16 @@ class TransformerConfig:
     dropout: float
     vocab_size: int
     max_seq_len: int
+
+
+
+def log_config_to_mlflow(config, prefix=""):
+    for key, value in config.items():
+        full_key = f"{prefix}{key}" if prefix else key
+        if isinstance(value, dict):
+            log_config_to_mlflow(value, prefix=f"{full_key}.")
+        else:
+            mlflow.log_param(full_key, value)
 
 
 def main():
@@ -40,38 +52,46 @@ def main():
     config = OmegaConf.merge(config, cli_conf)
     # print(OmegaConf.to_yaml(config))
 
-    set_seed(config["seed"])
+    mlflow_tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "mlruns")  # локально по умолчанию
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+    mlflow.set_experiment("hrv-llm")
 
-    logger = setup_logger(name=__name__, log_file=config["logging"]["log_dir"], level=logging.INFO)
+    with mlflow.start_run(run_name="training_run") as run:
 
-    logger.info("Loading datatsets...")
-    dataset = load_and_preprocess_data(config)
+        log_config_to_mlflow(config)
+
+        set_seed(config["seed"])
+
+        logger = setup_logger(name=__name__, log_file=config["logging"]["log_dir"], level=logging.INFO)
+
+        logger.info("Loading datatsets...")
+        dataset = load_and_preprocess_data(config)
     
-    logger.info("Train tokenizer...")
-    tokenizer = train_tokenizer(dataset["train"], config)
+        logger.info("Train tokenizer...")
+        tokenizer = train_tokenizer(dataset["train"], config)
 
-    logger.info("Save tokenizer...")
-    tokenizer.save_pretrained(config["tokenizer"]["path_save"])
+        logger.info("Save tokenizer...")
+        tokenizer.save_pretrained(config["tokenizer"]["path_save"])
 
-    logger.info("Preprocessing data...")
-    tokenized_dataset_train = dataset['train'].map(lambda examples: chunk_by_document(examples, tokenizer, config),
-                                     batched=True,
-                                     remove_columns=dataset['train'].column_names
-                                )
+        logger.info("Preprocessing data...")
+        tokenized_dataset_train = dataset['train'].map(lambda examples: chunk_by_document(examples, tokenizer, config),
+                                         batched=True,
+                                         remove_columns=dataset['train'].column_names
+                                    )
     
-    tokenized_dataset_val = dataset['test'].map(lambda examples: chunk_by_document(examples, tokenizer, config),
-                                     batched=True,
-                                     remove_columns=dataset['test'].column_names
-                                )
+        tokenized_dataset_val = dataset['test'].map(lambda examples: chunk_by_document(examples, tokenizer, config),
+                                         batched=True,
+                                         remove_columns=dataset['test'].column_names
+                                    )
     
 
-    train_dataset = TextDataset(tokenized_dataset_train, tokenizer)
-    train_dataloader = create_dataloader(train_dataset, tokenizer.eos_token_id, max_seq_len=config["model"]["max_seq_len"], batch_size=config["trainer"]["batch_size"], is_train=True)
+        train_dataset = TextDataset(tokenized_dataset_train, tokenizer)
+        train_dataloader = create_dataloader(train_dataset, tokenizer.eos_token_id, max_seq_len=config["model"]["max_seq_len"], batch_size=config["trainer"]["batch_size"], is_train=True)
 
-    val_dataset = TextDataset(tokenized_dataset_val, tokenizer)
-    val_dataloader = create_dataloader(val_dataset, tokenizer.eos_token_id, max_seq_len=config["model"]["max_seq_len"], batch_size=config["trainer"]["batch_size"], is_train=False)
+        val_dataset = TextDataset(tokenized_dataset_val, tokenizer)
+        val_dataloader = create_dataloader(val_dataset, tokenizer.eos_token_id, max_seq_len=config["model"]["max_seq_len"], batch_size=config["trainer"]["batch_size"], is_train=False)
     
-    model_configs = TransformerConfig(n_layer=config["model"]["n_layer"],
+        model_configs = TransformerConfig(n_layer=config["model"]["n_layer"],
                                   n_head=config["model"]["n_head"],
                                   n_kv_head=config["model"]["n_kv_head"],
                                   hidden_dim=config["model"]["hidden_dim"],
@@ -81,17 +101,21 @@ def main():
                                   max_seq_len=config["model"]["max_seq_len"],
                                   )
 
-    model = TransformerForCausalLM(model_configs)
-    trainer = Trainer(config, logger)
+        model = TransformerForCausalLM(model_configs)
+        trainer = Trainer(config, logger)
 
-    logger.info("Starting training pipeline...")
-    trainer.run(model, train_dataloader, val_dataloader)
+        logger.info("Starting training pipeline...")
+        trainer.run(model, train_dataloader, val_dataloader)
 
-    logger.info("Training completed successfully!")
+        logger.info("Training completed successfully!")
     
-    logger.info("Save model")
-    model.save_pretrained(config["model"]["path_save"])
+        logger.info("Save model")
+        model.save_pretrained(config["model"]["path_save"])
+
+        mlflow.log_artifacts(config["model"]["path_save"], artifact_path="model")
+        mlflow.log_artifacts(config["tokenizer"]["path_save"], artifact_path="tokenizer")
     
+        logger.info(f"MLflow run ID: {run.info.run_id}")
 
 if __name__ == "__main__":
     main()

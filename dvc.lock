@@ -17,11 +17,11 @@ stages:
     outs:
     - path: model/
       hash: md5
-      md5: cafe3edc18e9b2363e2824c52363957c.dir
-      size: 48426426
+      md5: 4ad099f5fb733a748f189f6fd86803f8.dir
+      size: 311653061
       nfiles: 3
     - path: tokenizer/
       hash: md5
-      md5: 34244bd07b2926e280b38b9d33dbba93.dir
-      size: 268631
+      md5: 409f9412649fe8628def9db10b58aa79.dir
+      size: 268157
       nfiles: 3

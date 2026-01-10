@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from tqdm.auto import tqdm, trange
+import mlflow
 
 
 def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps):
@@ -104,12 +105,14 @@ class Trainer:
                 self.logger.info(f"Epoch {logs['epoch']}, Step {iter_num}: val_loss = {val_loss.item():.4f}")
                 # plotlosses.update({"val_loss": val_loss.item()}, current_step=iter_num)
                 # plotlosses.send()
+                mlflow.log_metric("val_loss", val_loss.item(), step=iter_num)
                 model.train()
 
             if iter_num % self.plot_every_n_steps == 0:
                 logs["loss"] = loss.item()
                 logs["lr"] = scheduler.get_last_lr()[0]
                 self.logger.info(f"Epoch {logs['epoch']}, Step {iter_num}: train_loss = {loss.item():.4f}")
+                mlflow.log_metric("train_loss", loss.item(), step=iter_num)
                 # plotlosses.update(logs, current_step=iter_num)
                 # plotlosses.send()
         if val_loader is not None:

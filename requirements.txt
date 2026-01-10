@@ -60,3 +60,4 @@ urllib3==2.5.0
 xxhash==3.6.0
 yarl==1.22.0
 dvc
+mlflow>=2.10.0
