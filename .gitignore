@@ -1,3 +1,5 @@
 .dvc/config
 model/
 tokenizer/
+/model
+/tokenizer

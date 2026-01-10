@@ -1,0 +1,27 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python train.py --config config.yaml data.num_samples=1000 
+      tokenizer.num_samples_for_tokenizer=1000 trainer.n_steps=5 
+      trainer.val_every_n_steps=3 trainer.plot_every_n_steps=1
+    deps:
+    - path: data/
+      hash: md5
+      md5: ca5e0919ea6e56b1d0689342e9ed794e.dir
+      size: 705168893
+      nfiles: 7
+    - path: train.py
+      hash: md5
+      md5: b6d3d4dc8540c59481d7fb9701d5d1cd
+      size: 3702
+    outs:
+    - path: model/
+      hash: md5
+      md5: cafe3edc18e9b2363e2824c52363957c.dir
+      size: 48426426
+      nfiles: 3
+    - path: tokenizer/
+      hash: md5
+      md5: 34244bd07b2926e280b38b9d33dbba93.dir
+      size: 268631
+      nfiles: 3

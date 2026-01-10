@@ -9,6 +9,7 @@ from transformers import PreTrainedTokenizerFast
 from functools import partial
 import torch
 from torch.utils.data import DataLoader
+from datasets import load_from_disk
 
 
 def clean_text(ds):
@@ -25,19 +26,21 @@ def load_and_preprocess_data(config):
         hrv_dataset = load_dataset("texts", data_files=data_config["file_args"]["path"])
         hrv_dataset = hrv_dataset.map(clean_text)
     else:
-        hrv_dataset = load_dataset(**data_config["load_args"]) #load_dataset("HuggingFaceFW/fineweb-2", name="hrv_Latn", split="train", streaming=True) 
-        hrv_dataset = hrv_dataset.map(clean_text)
+        # hrv_dataset = load_dataset(**data_config["load_args"]) #load_dataset("HuggingFaceFW/fineweb-2", name="hrv_Latn", split="train", streaming=True) 
+        # hrv_dataset = hrv_dataset.map(clean_text)
 
-        if data_config["load_args"]["streaming"]:
-            NUM_SAMPLES = data_config["num_samples"]
-            dataset = {'texts': []}
+        # if data_config["load_args"]["streaming"]:
+        #     NUM_SAMPLES = data_config["num_samples"]
+        #     dataset = {'texts': []}
 
-            for i, ds in enumerate(hrv_dataset):
-                dataset['texts'].append(ds['text'])
-                if i == NUM_SAMPLES:
-                    break
+        #     for i, ds in enumerate(hrv_dataset):
+        #         dataset['texts'].append(ds['text'])
+        #         if i == NUM_SAMPLES:
+        #             break
 
-            hrv_dataset = Dataset.from_dict(dataset)
+        #     hrv_dataset = Dataset.from_dict(dataset)
+        NUM_SAMPLES = data_config["num_samples"]
+        hrv_dataset =  Dataset.from_dict(load_from_disk("data")[:NUM_SAMPLES])
 
     hrv_dataset = hrv_dataset.train_test_split(test_size=data_config["test_size"])
     return hrv_dataset

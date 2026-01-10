@@ -1,0 +1,7 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/krivonosanna/LLM_for_hrv_lang.dvc
+    auth = basic
+    user = krivonosanna
+    password = 995ec7ce485cfb1e4f4441cca21a56e363394c36
