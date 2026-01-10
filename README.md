@@ -56,7 +56,7 @@
 ; - **Инфраструктура:** Docker, Kubernetes   -->
 - **CI/CD:** GitHub Actions 
 
-## Вызов
+<!-- ## Вызов
 
 Для запуска обучения модели используйте следующую команду:
 
@@ -70,6 +70,30 @@ python train.py --config config.yaml
 ```bash
 pip install -r requirements.txt
 python train.py --config config.yaml data.num_samples=1000 tokenizer.num_samples_for_tokenizer=1000 trainer.n_steps=5 trainer.val_every_n_steps=3 trainer.plot_every_n_steps=1
+``` -->
+
+
+## Вызов
+Данные и модель версионируются с помощью DVC (Data Version Control) и физически находятся в удалённом хранилище на DAGsHub. 
+
+Для клонировния:
+
+```bash
+git clone https://github.com/krivonosanna/LLM_for_hrv_lang.git
+```
+
+Для загрузки данных и модели:
+
+```bash
+pip install -r requirements.txt 
+dvc pull 
+```
+
+Если нужно переобучить модель:
+
+```bash
+pip install -r requirements.txt 
+dvc repro 
 ```
 
 
