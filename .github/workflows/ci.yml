@@ -21,7 +21,7 @@ jobs:
 
       - name: Configure DVC remote (DAGsHub)
         run: |
-          dvc remote add origin https://dagshub.com/krivonosanna/LLM_for_hrv_lang.dvc
+          dvc remote add -f origin https://dagshub.com/krivonosanna/LLM_for_hrv_lang.dvc
           dvc remote modify origin auth basic
           dvc remote modify origin user "${{ secrets.DAGSHUB_USERNAME }}"
           dvc remote modify origin password "${{ secrets.DAGSHUB_TOKEN }}"
