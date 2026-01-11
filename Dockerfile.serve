@@ -1,0 +1,16 @@
+FROM pytorch/torchserve:latest
+
+COPY requirements_serve.txt .
+RUN pip install --no-cache-dir -r requirements_serve.txt
+
+
+COPY serve/model-store /home/model-server/model-store
+COPY serve/config.properties /home/model-server/config.properties
+
+EXPOSE 8080 8081
+
+CMD ["torchserve", \
+     "--start", \
+     "--model-store", "model-store", \
+     "--models", "mymodel=mymodel.mar", \
+     "--ts-config", "config.properties"]
