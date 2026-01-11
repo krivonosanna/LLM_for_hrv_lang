@@ -126,8 +126,8 @@ docker build -t ml-app:v1 .
 docker run --rm \                              
   -v $(pwd):/data \
   ml-app:v1 \
-  --input_path /data/test_docker.csv \
-  --output_path /data/result_docker.csv
+  --input_path /data/input_model.csv \
+  --output_path /data/output_model.csv
 ```
 
 Формат входа - CSV с колонкой input_model:
