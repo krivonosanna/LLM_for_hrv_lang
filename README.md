@@ -112,6 +112,46 @@ dvc repro
 mlflow ui
 ```
 
+## 🐳 Docker-образ
+
+Сборка 
+
+```bash
+docker build -t ml-app:v1 .    
+```
+
+Запуск
+
+```bash
+docker run --rm \                              
+  -v $(pwd):/data \
+  ml-app:v1 \
+  --input_path /data/test_docker.csv \
+  --output_path /data/result_docker.csv
+```
+
+Формат входа - CSV с колонкой input_model:
+
+```csv
+input_model
+"Zagreb je glavni grad Hrvatske."
+"Kava je popularna u Hrvatskoj."
+```
+
+Формат выхода - CSV с колонками input (исходный текст) и prediction (сгенерированный моделью текст на хорватском языке):
+
+```csv
+input,prediction
+"Zagreb je glavni grad Hrvatske.","Zagreb je glavni grad Hrvatske i najveći grad u zemlji po broju stanovnika."
+```
+
+📦 Что делает скрипт src/predict.py?
+
+- Загружает предобученную causal language model и токенайзер из локальных папок (model/, tokenizer/)
+- Читает входной CSV-файл по пути --input_path
+- Для каждой строки в колонке input_model генерирует продолжение
+- Сохраняет пары (исходный текст, предсказание) в CSV по пути --output_path
+
 ## ✅ Контакты
 
 **Автор:** *[Кривонос Анна]* 
