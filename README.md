@@ -162,7 +162,13 @@ input,prediction
 python export_model.py
 ```
 
-Переместите tokenizer в отдельную папку - extra-files;
+Переместите tokenizer в отдельную папку - extra-files:
+
+```bash
+mkdir -p extra-files
+mv tokenizer extra-files/
+```
+
 
 Подготовка архива модели:
 
