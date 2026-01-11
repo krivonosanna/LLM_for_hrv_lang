@@ -82,10 +82,16 @@ python train.py --config config.yaml data.num_samples=1000 tokenizer.num_samples
 git clone https://github.com/krivonosanna/LLM_for_hrv_lang.git
 ```
 
-Для загрузки данных и модели:
+Для загрузки данных и модели (для подключения нужен токен их .dvc - добавлен для возможности проверки):
 
 ```bash
-pip install -r requirements.txt 
+pip install -r requirements.txt
+export DAGSHUB_USERNAME=USERNAME
+export DAGSHUB_TOKEN=ваш_токен_из_dagshub
+dvc remote add origin https://dagshub.com/${DAGSHUB_USERNAME}/LLM_for_hrv_lang.dvc
+dvc remote modify origin auth basic
+dvc remote modify origin user "${DAGSHUB_USERNAME}"
+dvc remote modify origin password "${DAGSHUB_TOKEN}"
 dvc pull 
 ```
 
@@ -123,11 +129,7 @@ docker build -t ml-app:v1 .
 Запуск
 
 ```bash
-docker run --rm \                              
-  -v $(pwd):/data \
-  ml-app:v1 \
-  --input_path /data/input_model.csv \
-  --output_path /data/output_model.csv
+docker run --rm -v $(pwd):/data ml-app:v1 --input_path /data/input_model.csv --output_path /data/outputs.csv
 ```
 
 Формат входа - CSV с колонкой input_model:
