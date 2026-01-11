@@ -82,7 +82,7 @@ python train.py --config config.yaml data.num_samples=1000 tokenizer.num_samples
 git clone https://github.com/krivonosanna/LLM_for_hrv_lang.git
 ```
 
-Для загрузки данных и модели (для подключения нужен токен их .dvc - добавлен для возможности проверки):
+Для загрузки данных и модели (для подключения нужен токен из .dvc - добавлен для возможности проверки):
 
 ```bash
 pip install -r requirements.txt
