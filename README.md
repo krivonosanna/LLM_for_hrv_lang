@@ -154,6 +154,58 @@ input,prediction
 - Для каждой строки в колонке input_model генерирует продолжение
 - Сохраняет пары (исходный текст, предсказание) в CSV по пути --output_path
 
+## Развёртывание модели как онлайн-сервиса с TorchServe
+
+Сохраните модель:
+
+```bash
+python export_model.py
+```
+
+Переместите tokenizer в отдельную папку - extra-files;
+
+Подготовка архива модели:
+
+```bash
+mkdir -p serve/model-store
+
+torch-model-archiver \                                  
+  --model-name mymodel \
+  -v 1.0 \
+  --serialized-file model.pt \
+  --handler src/handler.py \
+  --extra-files "extra-files/" \
+  -r requirements_serve.txt \
+  --export-path serve/model-store \
+  -f
+  ```
+
+Сборка:
+
+```bash
+docker build -f Dockerfile.serve -t mymodel-serve:v1 .  
+```
+
+Запуск:
+
+```bash
+docker run -d \
+  --name hrv-llm-service \
+  -p 8080:8080 \
+  -p 8081:8081 \
+  -p 8082:8082 \
+  mymodel-serve:v1
+```
+
+Отправьте запрос:
+
+```bash
+curl -X POST http://localhost:8080/predictions/mymodel \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Your text"}'
+```
+
+
 ## ✅ Контакты
 
 **Автор:** *[Кривонос Анна]* 
